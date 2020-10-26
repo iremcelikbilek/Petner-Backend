@@ -1,4 +1,6 @@
-![](https://github.com/iremcelikbilek/Petner-Backend/blob/main/Github/Logo.png)
+<p align="center">
+  <img src="https://github.com/iremcelikbilek/Petner-Backend/blob/main/Github/Logo.png" />
+</p>
 
 ------------
 
