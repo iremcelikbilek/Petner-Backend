@@ -10,7 +10,7 @@ import (
 
 func MailSender(subject string, code string, to string) {
 	from := "apikey"
-	password := "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"
+	password := ""
 	header := make(map[string]string)
 	header["From"] = "petner@protonmail.com"
 	header["To"] = to
