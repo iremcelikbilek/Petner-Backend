@@ -44,6 +44,15 @@ func NewPassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if len(passwordData.Password) < 8 {
+		response = util.GeneralResponseModel{
+			true, "Parola en az 8 karakterli olmalıdır.", nil,
+		}
+		w.Write(response.ToJson())
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
 	fetchedData := fb.GetFilteredData("/resetPasswordCodes", "personEmail", passwordData.Mail)
 	var result resetModel.ResetPasswordDataModel
 	mapstructure.Decode(fetchedData, &result)

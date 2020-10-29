@@ -48,6 +48,33 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if len(signupData.PersonName) < 2 || len(signupData.PersonLastName) < 2 {
+		response = util.GeneralResponseModel{
+			true, "İsim veya Soyisim en az 2 karakterli olmalıdır.", nil,
+		}
+		w.Write(response.ToJson())
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	if len(signupData.Password) < 8 {
+		response = util.GeneralResponseModel{
+			true, "Parola en az 8 karakterli olmalıdır.", nil,
+		}
+		w.Write(response.ToJson())
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	if len(signupData.PersonPhone) < 11 {
+		response = util.GeneralResponseModel{
+			true, "Telefon numarası en az 11 karakterli olmalıdır.", nil,
+		}
+		w.Write(response.ToJson())
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
 	fetchedData := fb.GetFilteredData("/persons", "personEmail", signupData.PersonEmail)
 	var result SignUpModel
 	mapstructure.Decode(fetchedData, &result)
