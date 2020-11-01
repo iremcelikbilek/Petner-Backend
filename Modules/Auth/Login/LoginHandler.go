@@ -2,6 +2,7 @@ package Login
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -15,9 +16,7 @@ import (
 var JWT_Token = []byte("PETNER_JWT_TOKEN")
 
 func HandleLogin(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	util.EnableCors(&w)
 
 	if r.Method == http.MethodOptions {
 		w.WriteHeader(http.StatusNoContent)
@@ -47,10 +46,10 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fetchedData := fb.GetFilteredData("/persons", "personEmail", loginData.PersonEmail)
-	var result signUp.SignUpModel
-	mapstructure.Decode(fetchedData, &result)
+	var userDbData signUp.SignUpDbModel
+	mapstructure.Decode(fetchedData, &userDbData)
 
-	if result.PersonEmail == "" {
+	if userDbData.PersonEmail == "" {
 		response = util.GeneralResponseModel{
 			true, "Kullanıcı veya şifre hatalı", nil,
 		}
@@ -59,7 +58,7 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !util.ComparePasswords(result.Password, loginData.Password) {
+	if !util.ComparePasswords(userDbData.Password, loginData.Password) {
 		response = util.GeneralResponseModel{
 			true, "Kullanıcı veya şifre hatalı", nil,
 		}
@@ -96,4 +95,10 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 		Expires: expirationTime,
 	})
 	w.Write(response.ToJson())
+
+	nowDate, _ := time.Now().MarshalText()
+	userDbData.SignInDate = string(nowDate)
+	if err := fb.UpdateFilteredData("/persons", "personEmail", loginData.PersonEmail, userDbData); err != nil {
+		fmt.Println("Login tarihi güncellenemedi")
+	}
 }

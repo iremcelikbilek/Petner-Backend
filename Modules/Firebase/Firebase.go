@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 
 	"google.golang.org/api/option"
 
@@ -16,7 +17,7 @@ var client *database.Client
 
 func ConnectFirebase() {
 
-	opt := option.WithCredentialsJSON(credentional)
+	opt := option.WithCredentialsJSON([]byte(os.Getenv("FIREBASECREDENTIONAL")))
 
 	app, err := firebase.NewApp(ctx, nil, opt)
 	if err != nil {
@@ -115,5 +116,3 @@ func ReadData(path string) interface{} {
 	}
 	return data
 }
-
-var credentional = []byte(``)

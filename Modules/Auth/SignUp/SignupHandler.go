@@ -15,9 +15,7 @@ import (
 var JWT_Token = []byte("PETNER_JWT_TOKEN")
 
 func HandleSignUp(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	util.EnableCors(&w)
 
 	if r.Method == http.MethodOptions {
 		w.WriteHeader(http.StatusNoContent)
@@ -88,10 +86,18 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	signupData.Password = util.PasswordHasher(signupData.Password)
+	nowDate, _ := time.Now().MarshalText()
+	dbData := SignUpDbModel{
+		SignUpDate:     string(nowDate),
+		SignInDate:     string(nowDate),
+		PersonName:     signupData.PersonName,
+		PersonLastName: signupData.PersonLastName,
+		PersonEmail:    signupData.PersonEmail,
+		PersonPhone:    signupData.PersonPhone,
+		Password:       util.PasswordHasher(signupData.Password),
+	}
 
-	fbError := fb.PushData("/persons", signupData)
-	if fbError != nil {
+	if fbError := fb.PushData("/persons", dbData); fbError != nil {
 		response = util.GeneralResponseModel{
 			true, fbError.Error(), nil,
 		}
@@ -99,6 +105,7 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+
 	response = util.GeneralResponseModel{
 		false, "Kayıt Başarılı", nil,
 	}

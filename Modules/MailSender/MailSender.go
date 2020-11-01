@@ -6,13 +6,14 @@ import (
 	"fmt"
 	"html/template"
 	"net/smtp"
+	"os"
 )
 
 func MailSender(subject string, code string, to string) {
-	from := "apikey"
-	password := ""
+	from := "app.petner@gmail.com"
+	password := os.Getenv("SENDINBLUEPASS")
 	header := make(map[string]string)
-	header["From"] = "petner@protonmail.com"
+	header["From"] = "app.petner@gmail.com"
 	header["To"] = to
 	header["Subject"] = subject
 	header["MIME-Version"] = "1.0"
@@ -38,8 +39,8 @@ func MailSender(subject string, code string, to string) {
 	}
 
 	message += "\r\n" + base64.StdEncoding.EncodeToString([]byte(tpl.String()))
-	auth := smtp.PlainAuth("", from, password, "smtp.sendgrid.net")
-	err := smtp.SendMail("smtp.sendgrid.net:587", auth, from, []string{to}, []byte(message))
+	auth := smtp.PlainAuth("", from, password, "smtp-relay.sendinblue.com")
+	err := smtp.SendMail("smtp-relay.sendinblue.com:587", auth, from, []string{to}, []byte(message))
 
 	if err != nil {
 		fmt.Println(err)
