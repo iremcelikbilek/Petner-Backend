@@ -7,6 +7,7 @@ import (
 
 	fb "../../Firebase"
 	util "../../Utils"
+	"github.com/mitchellh/mapstructure"
 )
 
 func AdvertisementAddHandler(w http.ResponseWriter, r *http.Request) {
@@ -15,6 +16,14 @@ func AdvertisementAddHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodOptions {
 		w.WriteHeader(http.StatusNoContent)
 		return
+	}
+
+	var userMail string
+	if isSucessToken, message := util.CheckToken(r); !isSucessToken {
+		writeError(message, w)
+		return
+	} else {
+		userMail = message
 	}
 
 	var response util.GeneralResponseModel
@@ -75,18 +84,15 @@ func AdvertisementAddHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// User data get
+	fetchedData := fb.GetFilteredData("/persons", "personEmail", userMail)
+	var userDbData AdvertisementOwnerData
+	mapstructure.Decode(fetchedData, &userDbData)
 
 	nowDate, _ := time.Now().MarshalText()
 
 	dbData := AdvertisementDataModel{
-		AdvEntryDate: string(nowDate),
-		OwnerUser: AdvertisementOwnerData{
-			PersonName:     "",
-			PersonLastName: "",
-			PersonEmail:    "",
-			PersonPhone:    "",
-		},
+		AdvEntryDate:             string(nowDate),
+		OwnerUser:                userDbData,
 		AdvertisementTitle:       advertisementData.AdvertisementTitle,
 		AdvertisementExplanation: advertisementData.AdvertisementExplanation,
 		AdvertisementAnimal:      advertisementData.AdvertisementAnimal,
