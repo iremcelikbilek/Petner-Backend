@@ -106,9 +106,6 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response = util.GeneralResponseModel{
-		false, "Kayıt Başarılı", nil,
-	}
 	expirationTime := time.Now().Add(6 * time.Hour)
 	claims := &Claims{
 		Username: signupData.PersonEmail,
@@ -127,10 +124,13 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.SetCookie(w, &http.Cookie{
-		Name:    "token",
-		Value:   tokenString,
-		Expires: expirationTime,
-	})
+	tokenData := LoginResponseData{
+		Token:   tokenString,
+		Expires: expirationTime.String(),
+	}
+
+	response = util.GeneralResponseModel{
+		false, "Kayıt Başarılı", tokenData,
+	}
 	w.Write(response.ToJson())
 }
