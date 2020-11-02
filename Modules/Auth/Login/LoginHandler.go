@@ -85,15 +85,15 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response = util.GeneralResponseModel{
-		false, "Giriş Başarılı", nil,
+	tokenData := LoginResponseData{
+		Token:   tokenString,
+		Expires: expirationTime.String(),
 	}
 
-	http.SetCookie(w, &http.Cookie{
-		Name:    "token",
-		Value:   tokenString,
-		Expires: expirationTime,
-	})
+	response = util.GeneralResponseModel{
+		false, "Giriş Başarılı", tokenData,
+	}
+
 	w.Write(response.ToJson())
 
 	nowDate, _ := time.Now().MarshalText()

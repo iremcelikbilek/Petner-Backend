@@ -24,3 +24,8 @@ type SignUpDbModel struct {
 	PersonPhone    string `json:"personPhone"`
 	Password       string `json:"password"`
 }
+
+type LoginResponseData struct {
+	Token   string `json:"token"`
+	Expires string `json:"expires"`
+}
