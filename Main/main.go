@@ -6,7 +6,9 @@ import (
 	"os"
 
 	AdvertisementAdd "../Modules/Advertisement/Add"
+	AdvertisementDelete "../Modules/Advertisement/Delete"
 	AdvertisementGet "../Modules/Advertisement/Get"
+	AdvertisementUpdate "../Modules/Advertisement/Update"
 	Login "../Modules/Auth/Login"
 	NewPassword "../Modules/Auth/NewPassword"
 	Reset "../Modules/Auth/ResetPassword"
@@ -29,6 +31,9 @@ func createServer() {
 	go http.HandleFunc("/newPassword", NewPassword.NewPassword)
 	go http.HandleFunc("/advertisement/add", AdvertisementAdd.AdvertisementAddHandler)
 	go http.HandleFunc("/advertisement/get", AdvertisementGet.AdvertisementGetHandler)
+	go http.HandleFunc("/advertisement/get/mine", AdvertisementGet.GetSelfAdvertisementHandler)
+	go http.HandleFunc("/advertisement/update", AdvertisementUpdate.AdvertisementUpdateHandler)
+	go http.HandleFunc("/advertisement/delete", AdvertisementDelete.AdvertisementDeleteHandler)
 	go http.HandleFunc("/upload-photo", PhotoUpload.HandleUpload)
 	go http.HandleFunc("/", handleHome)
 
