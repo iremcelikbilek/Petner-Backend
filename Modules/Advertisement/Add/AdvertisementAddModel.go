@@ -34,6 +34,7 @@ type Animal struct {
 
 // Database type
 type AdvertisementDataModel struct {
+	AdvertisementID          string                 `json:"advertisementID"`
 	AdvEntryDate             string                 `json:"advEntryDate"`
 	OwnerUser                AdvertisementOwnerData `json:"ownerUser"`
 	AdvertisementTitle       string                 `json:"advertisementTitle"`

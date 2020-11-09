@@ -2,11 +2,13 @@ package Advertisement
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 
 	fb "../../Firebase"
 	util "../../Utils"
+	"github.com/google/uuid"
 	"github.com/mitchellh/mapstructure"
 )
 
@@ -91,6 +93,7 @@ func AdvertisementAddHandler(w http.ResponseWriter, r *http.Request) {
 	nowDate, _ := time.Now().MarshalText()
 
 	dbData := AdvertisementDataModel{
+		AdvertisementID:          uuid.New().String(),
 		AdvEntryDate:             string(nowDate),
 		OwnerUser:                userDbData,
 		AdvertisementTitle:       advertisementData.AdvertisementTitle,
@@ -112,6 +115,10 @@ func AdvertisementAddHandler(w http.ResponseWriter, r *http.Request) {
 		false, "İlan başarıyla oluşturuldu", nil,
 	}
 	w.Write(response.ToJson())
+
+	if err := fb.PushFilteredData("/persons", "personEmail", userMail, "advertisements", dbData); err != nil {
+		fmt.Println(err.Error())
+	}
 }
 
 func controlData(data string, minimum int) bool {

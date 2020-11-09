@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
+	"os"
 
 	AdvertisementAdd "../Modules/Advertisement/Add"
 	AdvertisementGet "../Modules/Advertisement/Get"
@@ -10,6 +12,7 @@ import (
 	Reset "../Modules/Auth/ResetPassword"
 	Signup "../Modules/Auth/SignUp"
 	PhotoUpload "../Modules/PhotoUploader"
+	Util "../Modules/Utils"
 
 	fb "../Modules/Firebase"
 )
@@ -27,6 +30,7 @@ func createServer() {
 	go http.HandleFunc("/advertisement/add", AdvertisementAdd.AdvertisementAddHandler)
 	go http.HandleFunc("/advertisement/get", AdvertisementGet.AdvertisementGetHandler)
 	go http.HandleFunc("/upload-photo", PhotoUpload.HandleUpload)
+	go http.HandleFunc("/", handleHome)
 
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {

@@ -47,6 +47,8 @@ func ResetPasswordHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Write(response.ToJson())
 
+	fb.DeleteAllFilteredDatas("/resetPasswordCodes", "personEmail", resetData.PersonEmail)
+
 	fetchedData := fb.GetFilteredData("/persons", "personEmail", resetData.PersonEmail)
 	var result ResetPasswordModel
 	mapstructure.Decode(fetchedData, &result)

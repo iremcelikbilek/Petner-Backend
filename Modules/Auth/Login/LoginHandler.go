@@ -67,7 +67,7 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	expirationTime := time.Now().Add(6 * time.Hour)
+	expirationTime := time.Now().Add(750 * time.Hour)
 	claims := &Claims{
 		Username: loginData.PersonEmail,
 		StandardClaims: jwt.StandardClaims{

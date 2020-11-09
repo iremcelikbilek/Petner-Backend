@@ -16,13 +16,14 @@ type Claims struct {
 }
 
 type SignUpDbModel struct {
-	SignUpDate     string `json:"signUpDate"`
-	SignInDate     string `json:"signInDate"`
-	PersonName     string `json:"personName"`
-	PersonLastName string `json:"personLastName"`
-	PersonEmail    string `json:"personEmail"`
-	PersonPhone    string `json:"personPhone"`
-	Password       string `json:"password"`
+	SignUpDate     string        `json:"signUpDate"`
+	SignInDate     string        `json:"signInDate"`
+	PersonName     string        `json:"personName"`
+	PersonLastName string        `json:"personLastName"`
+	PersonEmail    string        `json:"personEmail"`
+	PersonPhone    string        `json:"personPhone"`
+	Password       string        `json:"password"`
+	Advertisements []interface{} `json:"advertisements"`
 }
 
 type LoginResponseData struct {

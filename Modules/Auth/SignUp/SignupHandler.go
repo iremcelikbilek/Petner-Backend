@@ -95,6 +95,7 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request) {
 		PersonEmail:    signupData.PersonEmail,
 		PersonPhone:    signupData.PersonPhone,
 		Password:       util.PasswordHasher(signupData.Password),
+		Advertisements: make([]interface{}, 0),
 	}
 
 	if fbError := fb.PushData("/persons", dbData); fbError != nil {
@@ -106,7 +107,7 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	expirationTime := time.Now().Add(6 * time.Hour)
+	expirationTime := time.Now().Add(750 * time.Hour)
 	claims := &Claims{
 		Username: signupData.PersonEmail,
 		StandardClaims: jwt.StandardClaims{

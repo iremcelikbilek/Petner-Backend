@@ -43,6 +43,28 @@ func PushData(path string, data interface{}) error {
 	return err
 }
 
+func PushFilteredData(path string, child string, equal string, newChild string, pushData interface{}) error {
+	var data interface{}
+	err := client.NewRef(path).OrderByChild(child).EqualTo(equal).Get(ctx, &data)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	itemsMap := data.(map[string]interface{})
+
+	var dataParentName string
+	for i, _ := range itemsMap {
+		dataParentName = i
+		break
+	}
+	PushData(path+"/"+dataParentName+"/"+newChild, pushData)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	return nil
+}
+
 func GetFilteredData(path string, child string, equal string) interface{} {
 	var data interface{}
 	err := client.NewRef(path).OrderByChild(child).EqualTo(equal).Get(ctx, &data)
@@ -115,4 +137,18 @@ func ReadData(path string) interface{} {
 		log.Fatal(err)
 	}
 	return data
+}
+
+func DeleteAllFilteredDatas(path string, child string, equal string) {
+	var data interface{}
+	err := client.NewRef(path).OrderByChild(child).EqualTo(equal).Get(ctx, &data)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	itemsMap := data.(map[string]interface{})
+
+	for i, _ := range itemsMap {
+		client.NewRef(path + "/" + i).Delete(ctx)
+	}
 }

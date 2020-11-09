@@ -19,30 +19,79 @@ func AdvertisementGetHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var response util.GeneralResponseModel
-	var advertisements []addModel.AdvertisementDataModel
+	keys, ok := r.URL.Query()["id"]
 
-	allData := fb.ReadData("/advertisement")
-
-	if allData == nil {
-		w.WriteHeader(http.StatusInternalServerError)
+	if !ok {
+		handleGetList(&w, r)
+		return
+	} else if len(keys[0]) < 1 {
 		response = util.GeneralResponseModel{
-			true, "Bir hata oluştu", nil,
+			true, "İlan id bilgisi gönderilmelidir", nil,
 		}
 		w.Write(response.ToJson())
 		return
 	}
 
+	data := fb.GetFilteredData("/advertisement", "advertisementID", keys[0])
+	if data == nil {
+		w.WriteHeader(http.StatusNotFound)
+		response = util.GeneralResponseModel{
+			true, "İlan bulunamadı", nil,
+		}
+		w.Write(response.ToJson())
+		return
+	}
+
+	response = util.GeneralResponseModel{
+		true, "Başarılı", data,
+	}
+	w.Write(response.ToJson())
+}
+func handleGetList(w *http.ResponseWriter, r *http.Request) {
+	var response util.GeneralResponseModel
+	allData := fb.ReadData("/advertisement")
 	itemsMap := allData.(map[string]interface{})
+
+	if allData == nil {
+		(*w).WriteHeader(http.StatusInternalServerError)
+		response = util.GeneralResponseModel{
+			true, "Bir hata oluştu", nil,
+		}
+		(*w).Write(response.ToJson())
+		return
+	}
+
+	var advertisements []AdvertisementGetListData
 	for _, data := range itemsMap {
 		var advertisement addModel.AdvertisementDataModel
 		mapstructure.Decode(data, &advertisement)
 		t, _ := time.Parse(time.RFC3339Nano, advertisement.AdvEntryDate)
 		advertisement.AdvEntryDate = t.Format("2 January 2006")
-		advertisements = append(advertisements, advertisement)
+		var imageURL string
+		if len(advertisement.AdvertisementAnimal.AnimalPhotos) > 0 {
+			imageURL = advertisement.AdvertisementAnimal.AnimalPhotos[0]
+		}
+
+		var advertisementListData = AdvertisementGetListData{
+			AdvertisementID:    advertisement.AdvertisementID,
+			AdvertisementTitle: advertisement.AdvertisementTitle,
+			AdvertisementAnimal: Animal{
+				Genre:       advertisement.AdvertisementAnimal.Genre,
+				AnimalPhoto: imageURL,
+			},
+			AdvertisementAddress: Adress{
+				Province: advertisement.AdvertisementAddress.Province,
+				District: advertisement.AdvertisementAddress.District,
+			},
+			AdvertisementType: advertisement.AdvertisementType,
+			Status:            advertisement.Status,
+			Date:              t.Format("2 January 2006"),
+		}
+		advertisements = append(advertisements, advertisementListData)
 	}
 
 	response = util.GeneralResponseModel{
 		false, "Veriler başarıyla getirildi", advertisements,
 	}
-	w.Write(response.ToJson())
+	(*w).Write(response.ToJson())
 }
