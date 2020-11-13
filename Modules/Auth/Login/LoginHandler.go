@@ -97,8 +97,10 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 	w.Write(response.ToJson())
 
 	nowDate, _ := time.Now().MarshalText()
-	userDbData.SignInDate = string(nowDate)
-	if err := fb.UpdateFilteredData("/persons", "personEmail", loginData.PersonEmail, userDbData); err != nil {
+	itemMap := fetchedData.(map[string]interface{})
+	itemMap["signInDate"] = string(nowDate)
+
+	if err := fb.UpdateFilteredData("/persons", "personEmail", loginData.PersonEmail, itemMap); err != nil {
 		fmt.Println("Login tarihi güncellenemedi")
 	}
 }

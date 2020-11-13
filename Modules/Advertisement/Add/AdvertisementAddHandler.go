@@ -104,10 +104,19 @@ func AdvertisementAddHandler(w http.ResponseWriter, r *http.Request) {
 		AdvertisementComments:    []string{},
 		FavoriteCount:            0,
 		Status:                   0,
+		Deleted:                  false,
 	}
 
+	var animalPhotos []string
+	for _, photo := range dbData.AdvertisementAnimal.AnimalPhotos {
+		if photo != "" {
+			animalPhotos = append(animalPhotos, photo)
+		}
+	}
+	dbData.AdvertisementAnimal.AnimalPhotos = animalPhotos
+
 	if saveErr := fb.PushData("/advertisement", dbData); saveErr != nil {
-		writeError("Konum bilgisi hatalı", w)
+		writeError(saveErr.Error(), w)
 		return
 	}
 

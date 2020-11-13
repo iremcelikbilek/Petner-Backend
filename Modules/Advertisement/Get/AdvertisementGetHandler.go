@@ -1,6 +1,7 @@
 package Advertisement
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -33,7 +34,8 @@ func AdvertisementGetHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := fb.GetFilteredData("/advertisement", "advertisementID", keys[0])
-	if data == nil {
+	itemMap := data.(map[string]interface{})
+	if data == nil || itemMap["isDeleted"] == true {
 		w.WriteHeader(http.StatusNotFound)
 		response = util.GeneralResponseModel{
 			true, "İlan bulunamadı", nil,
@@ -48,6 +50,13 @@ func AdvertisementGetHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(response.ToJson())
 }
 func handleGetList(w *http.ResponseWriter, r *http.Request) {
+	util.EnableCors(&(*w))
+
+	if r.Method == http.MethodOptions {
+		(*w).WriteHeader(http.StatusNoContent)
+		return
+	}
+
 	var response util.GeneralResponseModel
 	allData := fb.ReadData("/advertisement")
 	itemsMap := allData.(map[string]interface{})
@@ -65,29 +74,32 @@ func handleGetList(w *http.ResponseWriter, r *http.Request) {
 	for _, data := range itemsMap {
 		var advertisement addModel.AdvertisementDataModel
 		mapstructure.Decode(data, &advertisement)
-		t, _ := time.Parse(time.RFC3339Nano, advertisement.AdvEntryDate)
-		advertisement.AdvEntryDate = t.Format("2 January 2006")
-		var imageURL string
-		if len(advertisement.AdvertisementAnimal.AnimalPhotos) > 0 {
-			imageURL = advertisement.AdvertisementAnimal.AnimalPhotos[0]
-		}
+		fmt.Println(advertisement.Deleted)
+		if data.(map[string]interface{})["isDeleted"] != true {
+			t, _ := time.Parse(time.RFC3339Nano, advertisement.AdvEntryDate)
+			advertisement.AdvEntryDate = t.Format("2 January 2006")
+			var imageURL string
+			if len(advertisement.AdvertisementAnimal.AnimalPhotos) > 0 {
+				imageURL = advertisement.AdvertisementAnimal.AnimalPhotos[0]
+			}
 
-		var advertisementListData = AdvertisementGetListData{
-			AdvertisementID:    advertisement.AdvertisementID,
-			AdvertisementTitle: advertisement.AdvertisementTitle,
-			AdvertisementAnimal: Animal{
-				Genre:       advertisement.AdvertisementAnimal.Genre,
-				AnimalPhoto: imageURL,
-			},
-			AdvertisementAddress: Adress{
-				Province: advertisement.AdvertisementAddress.Province,
-				District: advertisement.AdvertisementAddress.District,
-			},
-			AdvertisementType: advertisement.AdvertisementType,
-			Status:            advertisement.Status,
-			Date:              t.Format("2 January 2006"),
+			var advertisementListData = AdvertisementGetListData{
+				AdvertisementID:    advertisement.AdvertisementID,
+				AdvertisementTitle: advertisement.AdvertisementTitle,
+				AdvertisementAnimal: Animal{
+					Genre:       advertisement.AdvertisementAnimal.Genre,
+					AnimalPhoto: imageURL,
+				},
+				AdvertisementAddress: Adress{
+					Province: advertisement.AdvertisementAddress.Province,
+					District: advertisement.AdvertisementAddress.District,
+				},
+				AdvertisementType: advertisement.AdvertisementType,
+				Status:            advertisement.Status,
+				Date:              t.Format("2 January 2006"),
+			}
+			advertisements = append(advertisements, advertisementListData)
 		}
-		advertisements = append(advertisements, advertisementListData)
 	}
 
 	response = util.GeneralResponseModel{

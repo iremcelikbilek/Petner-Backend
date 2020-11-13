@@ -45,6 +45,7 @@ type AdvertisementDataModel struct {
 	AdvertisementComments    []string               `json:"advertisementComments"`
 	FavoriteCount            int                    `json:"favoriteCount"`
 	Status                   AdvertisementStatus    `json:"status"`
+	Deleted                  bool                   `json:"isDeleted"`
 }
 
 type AdvertisementOwnerData struct {
