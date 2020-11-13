@@ -15,6 +15,7 @@ func AdvertisementDeleteHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var userMail string
 	var response util.GeneralResponseModel
 	if isSucessToken, message := util.CheckToken(r); !isSucessToken {
 		response = util.GeneralResponseModel{
@@ -22,6 +23,8 @@ func AdvertisementDeleteHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		w.Write(response.ToJson())
 		return
+	} else {
+		userMail = message
 	}
 
 	keys, ok := r.URL.Query()["id"]
@@ -45,9 +48,26 @@ func AdvertisementDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	itemMap := data.(map[string]interface{})
+	if itemMap["ownerUser"].(map[string]interface{})["personEmail"] != userMail {
+		w.WriteHeader(http.StatusForbidden)
+		response = util.GeneralResponseModel{
+			true, "İzniniz yok", nil,
+		}
+		w.Write(response.ToJson())
+		return
+	}
 	itemMap["isDeleted"] = true
 
 	if deleteError := fb.UpdateFilteredData("/advertisement", "advertisementID", keys[0], itemMap); deleteError != nil {
+		w.WriteHeader(http.StatusNotFound)
+		response = util.GeneralResponseModel{
+			true, deleteError.Error(), nil,
+		}
+		w.Write(response.ToJson())
+		return
+	}
+
+	if deleteError := fb.UpdateUserSpesificData("/advertisements", "advertisementID", keys[0], itemMap, userMail); deleteError != nil {
 		w.WriteHeader(http.StatusNotFound)
 		response = util.GeneralResponseModel{
 			true, deleteError.Error(), nil,

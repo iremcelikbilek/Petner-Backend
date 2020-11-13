@@ -18,10 +18,14 @@ func AdvertisementUpdateHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var userMail string
 	if isSucessToken, message := util.CheckToken(r); !isSucessToken {
 		writeError(message, w)
 		return
+	} else {
+		userMail = message
 	}
+
 	var response util.GeneralResponseModel
 	keys, ok := r.URL.Query()["id"]
 
@@ -41,6 +45,14 @@ func AdvertisementUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	var currentAdvertisementData addModel.AdvertisementDataModel
 	mapstructure.Decode(data, &currentAdvertisementData)
+	if currentAdvertisementData.OwnerUser.PersonEmail != userMail {
+		w.WriteHeader(http.StatusForbidden)
+		response = util.GeneralResponseModel{
+			true, "İzniniz yok", nil,
+		}
+		w.Write(response.ToJson())
+		return
+	}
 
 	var advertisementData addModel.AdvertisementAddData
 	if err := json.NewDecoder(r.Body).Decode(&advertisementData); err != nil {
@@ -88,6 +100,16 @@ func AdvertisementUpdateHandler(w http.ResponseWriter, r *http.Request) {
 		writeError(updateError.Error(), w)
 		return
 	}
+
+	if updateError := fb.UpdateUserSpesificData("/advertisements", "advertisementID", keys[0], currentAdvertisementData, userMail); updateError != nil {
+		w.WriteHeader(http.StatusNotFound)
+		response = util.GeneralResponseModel{
+			true, updateError.Error(), nil,
+		}
+		w.Write(response.ToJson())
+		return
+	}
+
 	response = util.GeneralResponseModel{
 		false, "Güncelleme Başarılı", nil,
 	}
