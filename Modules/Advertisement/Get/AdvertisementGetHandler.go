@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	comment "../../Comment"
 	fb "../../Firebase"
 	util "../../Utils"
 	addModel "../Add"
@@ -43,9 +44,24 @@ func AdvertisementGetHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write(response.ToJson())
 		return
 	}
+	t, _ := time.Parse(time.RFC3339Nano, itemMap["advEntryDate"].(string))
+	itemMap["advEntryDate"] = t.Format("2 January 2006")
+
+	commentsObjects := itemMap["comments"]
+	var commentArray []comment.CommentDbModel = []comment.CommentDbModel{}
+	commentsMap := commentsObjects.(map[string]interface{})
+
+	for _, data := range commentsMap {
+		var comment comment.CommentDbModel
+		mapstructure.Decode(data, &comment)
+		t, _ := time.Parse(time.RFC3339Nano, comment.Date)
+		comment.Date = t.Format("2 January 2006")
+		commentArray = append(commentArray, comment)
+	}
+	itemMap["comments"] = commentArray
 
 	response = util.GeneralResponseModel{
-		true, "Başarılı", data,
+		true, "Başarılı", itemMap,
 	}
 	w.Write(response.ToJson())
 }

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"errors"
 
 	"google.golang.org/api/option"
 
@@ -96,6 +97,8 @@ func UpdateFilteredData(path string, child string, equal string, updatedData int
 		break
 	}
 
+	fmt.Println(dataParentName)
+
 	newData := map[string]interface{}{
 		dataParentName: updatedData,
 	}
@@ -103,9 +106,50 @@ func UpdateFilteredData(path string, child string, equal string, updatedData int
 	err = client.NewRef(path).Update(ctx, newData)
 	if err != nil {
 		fmt.Println(err)
+		fmt.Println("test 3")
 		return err
 	}
 	return nil
+}
+
+func CommentAdd(advertisementID string, comment interface{}) error {
+	var data interface{}
+	err := client.NewRef("/advertisement").OrderByChild("advertisementID").EqualTo(advertisementID).Get(ctx, &data)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	itemsMap := data.(map[string]interface{})
+
+	var dataParentName string
+	for i, _ := range itemsMap {
+		dataParentName = i
+		break
+	}
+
+	if dataParentName == "" {
+		return errors.New("İlan bulunamadı")
+	}
+
+	return PushData("/advertisement/"+dataParentName+"/comments", comment)
+}
+
+func UpdateUserSpesificData(path string, child string, equal string, updatedData interface{}, user string) error {
+	var data interface{}
+	err := client.NewRef("/persons").OrderByChild("personEmail").EqualTo(user).Get(ctx, &data)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	itemsMap := data.(map[string]interface{})
+
+	var dataParentName string
+	for i, _ := range itemsMap {
+		dataParentName = i
+		break
+	}
+
+	return UpdateFilteredData("/persons/"+dataParentName+path, child, equal, updatedData)
 }
 
 func Delete(path string, child string, equal string) error {

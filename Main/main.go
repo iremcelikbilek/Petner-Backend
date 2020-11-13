@@ -13,6 +13,7 @@ import (
 	NewPassword "../Modules/Auth/NewPassword"
 	Reset "../Modules/Auth/ResetPassword"
 	Signup "../Modules/Auth/SignUp"
+	Comment "../Modules/Comment"
 	PhotoUpload "../Modules/PhotoUploader"
 	Util "../Modules/Utils"
 
@@ -35,7 +36,7 @@ func createServer() {
 	go http.HandleFunc("/advertisement/update", AdvertisementUpdate.AdvertisementUpdateHandler)
 	go http.HandleFunc("/advertisement/delete", AdvertisementDelete.AdvertisementDeleteHandler)
 	go http.HandleFunc("/upload-photo", PhotoUpload.HandleUpload)
-	go http.HandleFunc("/", handleHome)
+	go http.HandleFunc("/comment", Comment.CommentHandler)
 
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
