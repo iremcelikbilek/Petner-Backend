@@ -86,8 +86,10 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tokenData := LoginResponseData{
-		Token:   tokenString,
-		Expires: expirationTime.String(),
+		Token:        tokenString,
+		Expires:      expirationTime.String(),
+		UserName:     userDbData.PersonName,
+		UserLastName: userDbData.PersonLastName,
 	}
 
 	response = util.GeneralResponseModel{

@@ -69,6 +69,7 @@ func GetSelfAdvertisementHandler(w http.ResponseWriter, r *http.Request) {
 			AdvertisementType: advertisement.AdvertisementType,
 			Status:            advertisement.Status,
 			Date:              t.Format("2 January 2006"),
+			IsDeleted:         data.(map[string]interface{})["isDeleted"].(bool),
 		}
 		advertisements = append(advertisements, advertisementListData)
 	}

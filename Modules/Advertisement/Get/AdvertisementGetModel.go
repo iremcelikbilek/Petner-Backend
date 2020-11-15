@@ -10,6 +10,7 @@ type AdvertisementGetListData struct {
 	AdvertisementType    addModel.AdvertisementType   `json:"advertisementType"`
 	Status               addModel.AdvertisementStatus `json:"status"`
 	Date                 string                       `json:"date"`
+	IsDeleted            bool                         `json:"isDeleted"`
 }
 
 type Adress struct {

@@ -126,8 +126,10 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tokenData := LoginResponseData{
-		Token:   tokenString,
-		Expires: expirationTime.String(),
+		Token:        tokenString,
+		Expires:      expirationTime.String(),
+		UserName:     signupData.PersonName,
+		UserLastName: signupData.PersonLastName,
 	}
 
 	response = util.GeneralResponseModel{
