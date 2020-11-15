@@ -3,8 +3,6 @@ name: Go
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
 
 jobs:
 
@@ -31,3 +29,8 @@ jobs:
 
     - name: Build
       run: go build -v Main/main.go
+    - run: mkdir -p /deploy
+    - uses: actions/upload-artifact@v2
+      with:
+        name: main
+        path: /deploy/main.go
