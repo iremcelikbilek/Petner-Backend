@@ -10,4 +10,5 @@ type CommentDbModel struct {
 	PersonLastName string `json:"personLastName"`
 	Comment        string `json:"comment"`
 	Date           string `json:"date"`
+	IsDeletable    bool   `json:"isDeletable"`
 }

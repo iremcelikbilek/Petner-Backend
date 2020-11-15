@@ -27,6 +27,8 @@ type SignUpDbModel struct {
 }
 
 type LoginResponseData struct {
-	Token   string `json:"token"`
-	Expires string `json:"expires"`
+	Token        string `json:"token"`
+	Expires      string `json:"expires"`
+	UserName     string `json:"name"`
+	UserLastName string `json:"lastName"`
 }

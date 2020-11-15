@@ -21,6 +21,17 @@ func AdvertisementGetHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var response util.GeneralResponseModel
+	var userMail string
+	if isSucessToken, message := util.CheckToken(r); !isSucessToken {
+		response = util.GeneralResponseModel{
+			true, message, nil,
+		}
+		w.Write(response.ToJson())
+		return
+	} else {
+		userMail = message
+	}
+
 	keys, ok := r.URL.Query()["id"]
 
 	if !ok {
@@ -35,8 +46,7 @@ func AdvertisementGetHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := fb.GetFilteredData("/advertisement", "advertisementID", keys[0])
-	itemMap := data.(map[string]interface{})
-	if data == nil || itemMap["isDeleted"] == true {
+	if data == nil {
 		w.WriteHeader(http.StatusNotFound)
 		response = util.GeneralResponseModel{
 			true, "İlan bulunamadı", nil,
@@ -44,21 +54,33 @@ func AdvertisementGetHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write(response.ToJson())
 		return
 	}
+	itemMap := data.(map[string]interface{})
+	if itemMap["isDeleted"] == true {
+		w.WriteHeader(http.StatusNotFound)
+		response = util.GeneralResponseModel{
+			true, "İlan bulunamadı", nil,
+		}
+		w.Write(response.ToJson())
+		return
+	}
+
 	t, _ := time.Parse(time.RFC3339Nano, itemMap["advEntryDate"].(string))
 	itemMap["advEntryDate"] = t.Format("2 January 2006")
-
 	commentsObjects := itemMap["comments"]
-	var commentArray []comment.CommentDbModel = []comment.CommentDbModel{}
-	commentsMap := commentsObjects.(map[string]interface{})
+	if commentsObjects != nil {
 
-	for _, data := range commentsMap {
-		var comment comment.CommentDbModel
-		mapstructure.Decode(data, &comment)
-		t, _ := time.Parse(time.RFC3339Nano, comment.Date)
-		comment.Date = t.Format("2 January 2006")
-		commentArray = append(commentArray, comment)
+		var commentArray []comment.CommentDbModel = []comment.CommentDbModel{}
+		commentsMap := commentsObjects.(map[string]interface{})
+		for _, data := range commentsMap {
+			var comment comment.CommentDbModel
+			mapstructure.Decode(data, &comment)
+			t, _ := time.Parse(time.RFC3339Nano, comment.Date)
+			comment.Date = t.Format("2 January 2006")
+			comment.IsDeletable = comment.PersonEmail == userMail
+			commentArray = append(commentArray, comment)
+		}
+		itemMap["comments"] = commentArray
 	}
-	itemMap["comments"] = commentArray
 
 	response = util.GeneralResponseModel{
 		true, "Başarılı", itemMap,
@@ -113,6 +135,7 @@ func handleGetList(w *http.ResponseWriter, r *http.Request) {
 				AdvertisementType: advertisement.AdvertisementType,
 				Status:            advertisement.Status,
 				Date:              t.Format("2 January 2006"),
+				IsDeleted:         advertisement.Deleted,
 			}
 			advertisements = append(advertisements, advertisementListData)
 		}

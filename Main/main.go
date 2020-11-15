@@ -1,9 +1,7 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
-	"os"
 
 	AdvertisementAdd "../Modules/Advertisement/Add"
 	AdvertisementDelete "../Modules/Advertisement/Delete"
@@ -15,7 +13,6 @@ import (
 	Signup "../Modules/Auth/SignUp"
 	Comment "../Modules/Comment"
 	PhotoUpload "../Modules/PhotoUploader"
-	Util "../Modules/Utils"
 
 	fb "../Modules/Firebase"
 )
