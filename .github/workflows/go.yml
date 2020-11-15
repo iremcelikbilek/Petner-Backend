@@ -29,7 +29,7 @@ jobs:
 
     - name: Build
       run: go build -v Main/main.go
-    - name: Download a single artifact
-      uses: actions/download-artifact@v2
+    - uses: actions/upload-artifact@v2
       with:
         name: main
+        path: .github
