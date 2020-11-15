@@ -29,8 +29,7 @@ jobs:
 
     - name: Build
       run: go build -v Main/main.go
-    - run: mkdir -p /deploy
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@master
       with:
         name: main
-        path: /deploy/main.go
+        path: /artifacts
