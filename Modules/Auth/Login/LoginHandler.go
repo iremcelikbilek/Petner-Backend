@@ -30,7 +30,7 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		response = util.GeneralResponseModel{
-			true, "Gelen veriler hatalı", nil,
+			true, "Gelen veriler hatalı :(", nil,
 		}
 		w.Write(response.ToJson())
 		return
