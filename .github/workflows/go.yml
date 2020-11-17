@@ -29,7 +29,5 @@ jobs:
 
     - name: Build
       run: go build -v Main/main.go
-    - uses: actions/upload-artifact@v2
-      with:
-        name: main
-        path: .github
+    - name: Trigger
+      run: curl yusufozgul.com:8888
