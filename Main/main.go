@@ -18,6 +18,7 @@ import (
 )
 
 func main() {
+	EnvironmentSet()
 	go fb.ConnectFirebase()
 	createServer()
 }
