@@ -11,4 +11,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Trigger
-      run: curl yusufozgul.com:8888
+      run: curl ${{secrets.URL}}
