@@ -5,6 +5,7 @@ type CommentModel struct {
 }
 
 type CommentDbModel struct {
+	CommentID      string `json:"commentID"`
 	PersonEmail    string `json:"personEmail"`
 	PersonName     string `json:"personName"`
 	PersonLastName string `json:"personLastName"`
