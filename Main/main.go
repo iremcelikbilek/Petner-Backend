@@ -33,9 +33,11 @@ func createServer() {
 	go http.HandleFunc("/advertisement/get", AdvertisementGet.AdvertisementGetHandler)
 	go http.HandleFunc("/advertisement/get/mine", AdvertisementGet.GetSelfAdvertisementHandler)
 	go http.HandleFunc("/advertisement/update", AdvertisementUpdate.AdvertisementUpdateHandler)
+	go http.HandleFunc("/advertisement/setSolved", AdvertisementUpdate.UpdateStatusHandler)
 	go http.HandleFunc("/advertisement/delete", AdvertisementDelete.AdvertisementDeleteHandler)
 	go http.HandleFunc("/upload-photo", PhotoUpload.HandleUpload)
 	go http.HandleFunc("/comment", Comment.CommentHandler)
+	go http.HandleFunc("/comment/delete", Comment.DeleteCommentHandler)
 	go http.HandleFunc("/user/update", UserUpdateHandler.UserUpdateHandler)
 
 	err := http.ListenAndServe(":8080", nil)
