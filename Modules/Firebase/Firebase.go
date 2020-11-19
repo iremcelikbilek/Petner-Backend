@@ -2,10 +2,10 @@ package Firebase
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"os"
-	"errors"
 
 	"google.golang.org/api/option"
 
@@ -141,6 +141,62 @@ func UpdateUserSpesificData(path string, child string, equal string, updatedData
 	}
 
 	return UpdateFilteredData("/persons/"+dataParentName+path, child, equal, updatedData)
+}
+
+func DeleteComment(advID string, commentID string, userMail string) error {
+	var data interface{}
+	err := client.NewRef("/advertisement").OrderByChild("advertisementID").EqualTo(advID).Get(ctx, &data)
+	if err != nil {
+		return err
+	}
+	itemsMap := data.(map[string]interface{})
+	if itemsMap == nil {
+		return errors.New("İlan bulunamadı")
+	}
+
+	var dataParentName string
+	for i, _ := range itemsMap {
+		dataParentName = i
+		break
+	}
+
+	if dataParentName == "" {
+		return errors.New("İlan bulunamadı")
+	}
+
+	advData := itemsMap[dataParentName]
+	if advData == nil {
+		return errors.New("İlan bulunamadı")
+	}
+	advDataMap := advData.(map[string]interface{})
+	if advDataMap == nil {
+		return errors.New("İlan bulunamadı")
+	}
+
+	commentsData := advDataMap["comments"]
+	if commentsData == nil {
+		return errors.New("Yorum bulunamadı")
+	}
+	commentsMap := commentsData.(map[string]interface{})
+
+	if commentsMap == nil {
+		return errors.New("Yorum bulunamadı")
+	}
+	for i, v := range commentsMap {
+		comment := v.(map[string]interface{})
+		if comment == nil {
+			return errors.New("Yorum bulunamadı")
+		}
+		if comment["commentID"] == commentID {
+			if comment["personEmail"].(string) == userMail {
+				return client.NewRef("advertisement/" + dataParentName + "/comments/" + i).Delete(ctx)
+			} else {
+				return errors.New("Yorumu silmeye yetkiniz yok")
+			}
+			break
+		}
+	}
+	return errors.New("Yorumu bulunamadı")
 }
 
 func Delete(path string, child string, equal string) error {

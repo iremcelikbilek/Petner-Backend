@@ -7,6 +7,7 @@ import (
 
 	fb "../Firebase"
 	util "../Utils"
+	"github.com/google/uuid"
 )
 
 func CommentHandler(w http.ResponseWriter, r *http.Request) {
@@ -63,6 +64,7 @@ func CommentHandler(w http.ResponseWriter, r *http.Request) {
 
 	nowDate, _ := time.Now().MarshalText()
 	var commentDbData CommentDbModel = CommentDbModel{
+		CommentID:      uuid.New().String(),
 		PersonEmail:    userMail,
 		PersonName:     userName,
 		PersonLastName: userLastName,
