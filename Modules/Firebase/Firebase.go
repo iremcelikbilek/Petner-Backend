@@ -48,7 +48,6 @@ func PushFilteredData(path string, child string, equal string, newChild string, 
 	var data interface{}
 	err := client.NewRef(path).OrderByChild(child).EqualTo(equal).Get(ctx, &data)
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 	itemsMap := data.(map[string]interface{})
@@ -60,7 +59,6 @@ func PushFilteredData(path string, child string, equal string, newChild string, 
 	}
 	PushData(path+"/"+dataParentName+"/"+newChild, pushData)
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 	return nil
@@ -86,7 +84,6 @@ func UpdateFilteredData(path string, child string, equal string, updatedData int
 	var data interface{}
 	err := client.NewRef(path).OrderByChild(child).EqualTo(equal).Get(ctx, &data)
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 	itemsMap := data.(map[string]interface{})
@@ -97,16 +94,12 @@ func UpdateFilteredData(path string, child string, equal string, updatedData int
 		break
 	}
 
-	fmt.Println(dataParentName)
-
 	newData := map[string]interface{}{
 		dataParentName: updatedData,
 	}
 
 	err = client.NewRef(path).Update(ctx, newData)
 	if err != nil {
-		fmt.Println(err)
-		fmt.Println("test 3")
 		return err
 	}
 	return nil
@@ -116,7 +109,6 @@ func CommentAdd(advertisementID string, comment interface{}) error {
 	var data interface{}
 	err := client.NewRef("/advertisement").OrderByChild("advertisementID").EqualTo(advertisementID).Get(ctx, &data)
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 	itemsMap := data.(map[string]interface{})
@@ -138,7 +130,6 @@ func UpdateUserSpesificData(path string, child string, equal string, updatedData
 	var data interface{}
 	err := client.NewRef("/persons").OrderByChild("personEmail").EqualTo(user).Get(ctx, &data)
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 	itemsMap := data.(map[string]interface{})
@@ -156,7 +147,6 @@ func Delete(path string, child string, equal string) error {
 	var data interface{}
 	err := client.NewRef(path).OrderByChild(child).EqualTo(equal).Get(ctx, &data)
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 	itemsMap := data.(map[string]interface{})
@@ -169,7 +159,6 @@ func Delete(path string, child string, equal string) error {
 
 	err = client.NewRef(path + "/" + dataParentName).Delete(ctx)
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 	return nil
@@ -187,7 +176,6 @@ func DeleteAllFilteredDatas(path string, child string, equal string) {
 	var data interface{}
 	err := client.NewRef(path).OrderByChild(child).EqualTo(equal).Get(ctx, &data)
 	if err != nil {
-		fmt.Println(err)
 		return
 	}
 	itemsMap := data.(map[string]interface{})

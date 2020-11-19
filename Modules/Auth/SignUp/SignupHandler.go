@@ -2,7 +2,6 @@ package SignUp
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -26,7 +25,6 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request) {
 	var signupData SignUpModel
 
 	err := json.NewDecoder(r.Body).Decode(&signupData)
-	fmt.Println(signupData)
 
 	if err != nil {
 		response = util.GeneralResponseModel{

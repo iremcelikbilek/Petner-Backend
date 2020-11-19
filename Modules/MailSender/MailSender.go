@@ -29,7 +29,6 @@ func MailSender(subject string, code string, to string) {
 	t, fileError := template.ParseFiles("./Modules/MailSender/mailIndex.html")
 
 	if fileError != nil {
-		fmt.Println(fileError)
 		return
 	}
 
@@ -46,5 +45,4 @@ func MailSender(subject string, code string, to string) {
 		fmt.Println(err)
 		return
 	}
-	fmt.Println("Email Sent!")
 }
