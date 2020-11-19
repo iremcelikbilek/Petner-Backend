@@ -13,6 +13,7 @@ import (
 	Signup "../Modules/Auth/SignUp"
 	Comment "../Modules/Comment"
 	PhotoUpload "../Modules/PhotoUploader"
+	UserUpdateHandler "../Modules/User"
 
 	fb "../Modules/Firebase"
 )
@@ -35,6 +36,7 @@ func createServer() {
 	go http.HandleFunc("/advertisement/delete", AdvertisementDelete.AdvertisementDeleteHandler)
 	go http.HandleFunc("/upload-photo", PhotoUpload.HandleUpload)
 	go http.HandleFunc("/comment", Comment.CommentHandler)
+	go http.HandleFunc("/user/update", UserUpdateHandler.UserUpdateHandler)
 
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
