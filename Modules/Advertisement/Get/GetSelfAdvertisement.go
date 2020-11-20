@@ -42,6 +42,14 @@ func GetSelfAdvertisementHandler(w http.ResponseWriter, r *http.Request) {
 
 	itemsMap := data.(map[string]interface{})
 	advertisementData := itemsMap["advertisements"]
+	if advertisementData == nil {
+		w.WriteHeader(http.StatusNotFound)
+		response = util.GeneralResponseModel{
+			true, "İlan bulunamadı", nil,
+		}
+		w.Write(response.ToJson())
+		return
+	}
 	advertisementsMap := advertisementData.(map[string]interface{})
 	var advertisements []AdvertisementGetListData
 
