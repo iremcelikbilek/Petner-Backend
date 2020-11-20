@@ -4,10 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	signUp "../Auth/SignUp"
 	fb "../Firebase"
 	util "../Utils"
-	"github.com/mitchellh/mapstructure"
 )
 
 func UserUpdateHandler(w http.ResponseWriter, r *http.Request) {
@@ -31,11 +29,9 @@ func UserUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fetchedData := fb.GetFilteredData("/persons", "personEmail", userMail)
-	var userDbData signUp.SignUpDbModel
-	mapstructure.Decode(fetchedData, &userDbData)
+	userDataMap := fetchedData.(map[string]interface{})
 
 	var updatedData UserUpdateModel
-
 	if err := json.NewDecoder(r.Body).Decode(&updatedData); err != nil {
 		response = util.GeneralResponseModel{
 			true, "Gelen veriler hatalı", nil,
@@ -53,7 +49,7 @@ func UserUpdateHandler(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		} else {
-			userDbData.PersonName = updatedData.PersonName
+			userDataMap["personName"] = updatedData.PersonName
 		}
 	}
 
@@ -66,7 +62,7 @@ func UserUpdateHandler(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		} else {
-			userDbData.PersonLastName = updatedData.PersonLastName
+			userDataMap["personLastName"] = updatedData.PersonLastName
 		}
 	}
 
@@ -79,11 +75,11 @@ func UserUpdateHandler(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		} else {
-			userDbData.PersonPhone = updatedData.PersonPhone
+			userDataMap["personPhone"] = updatedData.PersonPhone
 		}
 	}
 
-	if err := fb.UpdateFilteredData("/persons", "personEmail", userMail, userDbData); err != nil {
+	if err := fb.UpdateFilteredData("/persons", "personEmail", userMail, userDataMap); err != nil {
 		response = util.GeneralResponseModel{
 			true, err.Error(), nil,
 		}
