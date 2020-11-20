@@ -39,6 +39,7 @@ func createServer() {
 	go http.HandleFunc("/comment", Comment.CommentHandler)
 	go http.HandleFunc("/comment/delete", Comment.DeleteCommentHandler)
 	go http.HandleFunc("/user/update", UserUpdateHandler.UserUpdateHandler)
+	go http.HandleFunc("/user/me", UserUpdateHandler.UserSummaryHandler)
 
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
