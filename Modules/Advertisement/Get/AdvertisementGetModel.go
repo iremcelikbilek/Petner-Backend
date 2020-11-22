@@ -1,6 +1,10 @@
 package Advertisement
 
-import addModel "../Add"
+import (
+	"time"
+
+	addModel "../Add"
+)
 
 type AdvertisementGetListData struct {
 	AdvertisementID      string                       `json:"advertisementID"`
@@ -11,6 +15,7 @@ type AdvertisementGetListData struct {
 	Status               addModel.AdvertisementStatus `json:"status"`
 	Date                 string                       `json:"date"`
 	IsDeleted            bool                         `json:"isDeleted"`
+	FullDate             string                       `json:"fullDate"`
 }
 
 type Adress struct {
@@ -21,4 +26,20 @@ type Adress struct {
 type Animal struct {
 	Genre       string `json:"genre"`
 	AnimalPhoto string `json:"animalPhoto"`
+}
+
+type AdvSlice []AdvertisementGetListData
+
+func (p AdvSlice) Len() int {
+	return len(p)
+}
+
+func (p AdvSlice) Less(i, j int) bool {
+	t1, _ := time.Parse(time.RFC3339Nano, p[i].FullDate)
+	t2, _ := time.Parse(time.RFC3339Nano, p[j].FullDate)
+	return t1.After(t2)
+}
+
+func (p AdvSlice) Swap(i, j int) {
+	p[i], p[j] = p[j], p[i]
 }
