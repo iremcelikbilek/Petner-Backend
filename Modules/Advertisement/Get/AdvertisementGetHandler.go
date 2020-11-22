@@ -1,8 +1,8 @@
 package Advertisement
 
 import (
-	"fmt"
 	"net/http"
+	"sort"
 	"time"
 
 	comment "../../Comment"
@@ -68,17 +68,19 @@ func AdvertisementGetHandler(w http.ResponseWriter, r *http.Request) {
 	itemMap["advEntryDate"] = t.Format("2 January 2006")
 	commentsObjects := itemMap["comments"]
 	if commentsObjects != nil {
-
-		var commentArray []comment.CommentDbModel = []comment.CommentDbModel{}
+		var commentArray comment.CommentSlice = comment.CommentSlice{}
 		commentsMap := commentsObjects.(map[string]interface{})
 		for _, data := range commentsMap {
 			var comment comment.CommentDbModel
 			mapstructure.Decode(data, &comment)
 			t, _ := time.Parse(time.RFC3339Nano, comment.Date)
+			comment.FullDate = comment.Date
 			comment.Date = t.Format("2 January 2006")
 			comment.IsDeletable = comment.PersonEmail == userMail
 			commentArray = append(commentArray, comment)
 		}
+
+		sort.Sort(commentArray)
 		itemMap["comments"] = commentArray
 	}
 
@@ -108,14 +110,14 @@ func handleGetList(w *http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var advertisements []AdvertisementGetListData
+	var advertisements AdvSlice
 	for _, data := range itemsMap {
 		var advertisement addModel.AdvertisementDataModel
 		mapstructure.Decode(data, &advertisement)
-		fmt.Println(advertisement.Deleted)
+
 		if data.(map[string]interface{})["isDeleted"] != true {
 			t, _ := time.Parse(time.RFC3339Nano, advertisement.AdvEntryDate)
-			advertisement.AdvEntryDate = t.Format("2 January 2006")
+
 			var imageURL string
 			if len(advertisement.AdvertisementAnimal.AnimalPhotos) > 0 {
 				imageURL = advertisement.AdvertisementAnimal.AnimalPhotos[0]
@@ -136,10 +138,13 @@ func handleGetList(w *http.ResponseWriter, r *http.Request) {
 				Status:            advertisement.Status,
 				Date:              t.Format("2 January 2006"),
 				IsDeleted:         advertisement.Deleted,
+				FullDate:          advertisement.AdvEntryDate,
 			}
 			advertisements = append(advertisements, advertisementListData)
 		}
 	}
+
+	sort.Sort(advertisements)
 
 	response = util.GeneralResponseModel{
 		false, "Veriler başarıyla getirildi", advertisements,
