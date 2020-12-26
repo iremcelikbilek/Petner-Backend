@@ -7,6 +7,7 @@ import (
 	AdvertisementDelete "../Modules/Advertisement/Delete"
 	AdvertisementGet "../Modules/Advertisement/Get"
 	AdvertisementUpdate "../Modules/Advertisement/Update"
+	ChangePassword "../Modules/Auth/ChangePassword"
 	Login "../Modules/Auth/Login"
 	NewPassword "../Modules/Auth/NewPassword"
 	Reset "../Modules/Auth/ResetPassword"
@@ -27,6 +28,7 @@ func main() {
 func createServer() {
 	go http.HandleFunc("/signup", Signup.HandleSignUp)
 	go http.HandleFunc("/login", Login.HandleLogin)
+	go http.HandleFunc("/changePassword", ChangePassword.ChangePasswordHandler)
 	go http.HandleFunc("/resetPassword", Reset.ResetPasswordHandler)
 	go http.HandleFunc("/newPassword", NewPassword.NewPassword)
 	go http.HandleFunc("/advertisement/add", AdvertisementAdd.AdvertisementAddHandler)
