@@ -10,5 +10,3 @@ Sokak hayvanlarının yardımına koşuyoruz, onlar için beslenme yardımı, a�
 
 
 ------------
-
-
