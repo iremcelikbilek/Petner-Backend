@@ -42,7 +42,7 @@ type AdvertisementDataModel struct {
 	AdvertisementAnimal      Animal                 `json:"advertisementAnimal"`
 	AdvertisementAddress     Adress                 `json:"advertisementAddress"`
 	AdvertisementType        AdvertisementType      `json:"advertisementType"`
-	AdvertisementComments    []string               `json:"advertisementComments"`
+	AdvertisementComments    interface{}            `json:"comments"`
 	FavoriteCount            int                    `json:"favoriteCount"`
 	Status                   AdvertisementStatus    `json:"status"`
 	Deleted                  bool                   `json:"isDeleted"`

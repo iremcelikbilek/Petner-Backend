@@ -39,6 +39,7 @@ func createServer() {
 	go http.HandleFunc("/advertisement/delete", AdvertisementDelete.AdvertisementDeleteHandler)
 	go http.HandleFunc("/upload-photo", PhotoUpload.HandleUpload)
 	go http.HandleFunc("/comment", Comment.CommentHandler)
+	go http.HandleFunc("/comment/favorite", Comment.CommentFavoriteHandler)
 	go http.HandleFunc("/comment/delete", Comment.DeleteCommentHandler)
 	go http.HandleFunc("/user/update", UserUpdateHandler.UserUpdateHandler)
 	go http.HandleFunc("/user/me", UserUpdateHandler.UserSummaryHandler)
