@@ -5,6 +5,7 @@ import (
 
 	AdvertisementAdd "../Modules/Advertisement/Add"
 	AdvertisementDelete "../Modules/Advertisement/Delete"
+	AdvertisementFavorite "../Modules/Advertisement/Favorite"
 	AdvertisementGet "../Modules/Advertisement/Get"
 	AdvertisementUpdate "../Modules/Advertisement/Update"
 	ChangePassword "../Modules/Auth/ChangePassword"
@@ -13,6 +14,7 @@ import (
 	Reset "../Modules/Auth/ResetPassword"
 	Signup "../Modules/Auth/SignUp"
 	Comment "../Modules/Comment"
+	FavoriteList "../Modules/Favorites"
 	PhotoUpload "../Modules/PhotoUploader"
 	UserUpdateHandler "../Modules/User"
 
@@ -33,6 +35,7 @@ func createServer() {
 	go http.HandleFunc("/newPassword", NewPassword.NewPassword)
 	go http.HandleFunc("/advertisement/add", AdvertisementAdd.AdvertisementAddHandler)
 	go http.HandleFunc("/advertisement/get", AdvertisementGet.AdvertisementGetHandler)
+	go http.HandleFunc("/advertisement/favorite", AdvertisementFavorite.AdvertisementFavoriteHandler)
 	go http.HandleFunc("/advertisement/get/mine", AdvertisementGet.GetSelfAdvertisementHandler)
 	go http.HandleFunc("/advertisement/update", AdvertisementUpdate.AdvertisementUpdateHandler)
 	go http.HandleFunc("/advertisement/setSolved", AdvertisementUpdate.UpdateStatusHandler)
@@ -43,6 +46,7 @@ func createServer() {
 	go http.HandleFunc("/comment/delete", Comment.DeleteCommentHandler)
 	go http.HandleFunc("/user/update", UserUpdateHandler.UserUpdateHandler)
 	go http.HandleFunc("/user/me", UserUpdateHandler.UserSummaryHandler)
+	go http.HandleFunc("/user/favorites", FavoriteList.HandleFavoriteList)
 
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {

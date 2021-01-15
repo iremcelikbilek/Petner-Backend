@@ -240,3 +240,29 @@ func DeleteAllFilteredDatas(path string, child string, equal string) {
 		client.NewRef(path + "/" + i).Delete(ctx)
 	}
 }
+
+func DeleteFavoriteAdvertisement(id string, user string) error {
+	var data interface{}
+	err := client.NewRef("/persons").OrderByChild("personEmail").EqualTo(user).Get(ctx, &data)
+	if err != nil {
+		return err
+	}
+	itemsMap := data.(map[string]interface{})
+
+	var dataParentName string
+	for i, _ := range itemsMap {
+		dataParentName = i
+		break
+	}
+
+	userData := itemsMap[dataParentName].(map[string]interface{})
+	favorites := userData["favorites"].(map[string]interface{})
+
+	for index, value := range favorites {
+		if value == id {
+			client.NewRef("/persons/" + dataParentName + "/favorites/" + index).Delete(ctx)
+		}
+	}
+
+	return nil
+}
