@@ -11,14 +11,17 @@ type CommentModel struct {
 type CommentSlice []CommentDbModel
 
 type CommentDbModel struct {
-	CommentID      string `json:"commentID"`
-	PersonEmail    string `json:"personEmail"`
-	PersonName     string `json:"personName"`
-	PersonLastName string `json:"personLastName"`
-	Comment        string `json:"comment"`
-	Date           string `json:"date"`
-	IsDeletable    bool   `json:"isDeletable"`
-	FullDate       string `json:"fullDate"`
+	CommentID      string   `json:"commentID"`
+	PersonEmail    string   `json:"personEmail"`
+	PersonName     string   `json:"personName"`
+	PersonLastName string   `json:"personLastName"`
+	Comment        string   `json:"comment"`
+	Date           string   `json:"date"`
+	IsDeletable    bool     `json:"isDeletable"`
+	FullDate       string   `json:"fullDate"`
+	Favorites      []string `json:"favorites"`
+	IsFavorited    bool     `json:"isFavorited"`
+	FavoriteCount  int      `json:"favoritedCount"`
 }
 
 func (p CommentSlice) Len() int {

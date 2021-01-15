@@ -77,6 +77,15 @@ func AdvertisementGetHandler(w http.ResponseWriter, r *http.Request) {
 			comment.FullDate = comment.Date
 			comment.Date = t.Format("2 January 2006")
 			comment.IsDeletable = comment.PersonEmail == userMail
+			comment.FavoriteCount = len(comment.Favorites)
+
+			for _, mail := range comment.Favorites {
+				if mail == userMail {
+					comment.IsFavorited = true
+					break
+				}
+			}
+			comment.Favorites = nil
 			commentArray = append(commentArray, comment)
 		}
 
