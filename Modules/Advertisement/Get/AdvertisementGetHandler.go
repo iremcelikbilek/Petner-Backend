@@ -64,6 +64,21 @@ func AdvertisementGetHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	userData := fb.GetFilteredData("/persons", "personEmail", userMail)
+	userDataItemsMap := userData.(map[string]interface{})
+	userFavorites := userDataItemsMap["favorites"]
+
+	isFavorited := false
+	if userFavorites != nil {
+		favoritesMap := userFavorites.(map[string]interface{})
+		for _, value := range favoritesMap {
+			if keys[0] == value {
+				isFavorited = true
+				break
+			}
+		}
+	}
+
 	t, _ := time.Parse(time.RFC3339Nano, itemMap["advEntryDate"].(string))
 	itemMap["advEntryDate"] = t.Format("2 January 2006")
 	commentsObjects := itemMap["comments"]
@@ -93,8 +108,10 @@ func AdvertisementGetHandler(w http.ResponseWriter, r *http.Request) {
 		itemMap["comments"] = commentArray
 	}
 
+	itemMap["isFavorited"] = isFavorited
+
 	response = util.GeneralResponseModel{
-		true, "Başarılı", itemMap,
+		false, "Başarılı", itemMap,
 	}
 	w.Write(response.ToJson())
 }
