@@ -1,6 +1,7 @@
 package Comment
 
 import (
+	"fmt"
 	"net/http"
 
 	fb "../Firebase"
@@ -89,15 +90,21 @@ func CommentFavoriteHandler(w http.ResponseWriter, r *http.Request) {
 			var newFavorites []string
 
 			for _, mail := range commentDB.Favorites {
-				if mail != userMail {
+				if commentDB.CommentID == commentID[0] {
+					if mail != userMail {
+						newFavorites = append(newFavorites, mail)
+					}
+				} else {
 					newFavorites = append(newFavorites, mail)
 				}
+
 			}
 			commentDB.Favorites = newFavorites
 			commentMap[index] = commentDB
 		}
 	}
 
+	fmt.Println(commentMap)
 	data.(map[string]interface{})["comments"] = commentMap
 
 	if updateError := fb.UpdateFilteredData("/advertisement", "advertisementID", advID[0], data); updateError != nil {
